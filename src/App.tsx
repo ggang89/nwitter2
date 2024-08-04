@@ -4,6 +4,8 @@ import Profile from "./routes/Profile";
 import Home from "./routes/home";
 import Login from "./routes/login";
 import CreateAccount from "./routes/create-account";
+import { createGlobalStyle } from "styled-components";
+import reset from "styled-reset";
 
 const router = createBrowserRouter([
   {
@@ -30,9 +32,20 @@ const router = createBrowserRouter([
   }
 ]);
 
+const GlobalStyles = createGlobalStyle`
+${reset};
+*{box-sizing:border-box}
+body{
+  background: black;
+  color:white;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+}
+`
 function App() {
   return (
     <>
+      <GlobalStyles />
       <RouterProvider router={router} />
       {/* 위에 만든 router를 전달해줌 */}
     </>
