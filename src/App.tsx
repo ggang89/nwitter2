@@ -6,6 +6,8 @@ import Login from "./routes/login";
 import CreateAccount from "./routes/create-account";
 import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
+import { useEffect, useState } from "react";
+import LoadingScreen from "./components/loading-screen";
 
 const router = createBrowserRouter([
   {
@@ -24,12 +26,12 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element:<Login/>
+    element: <Login />,
   },
   {
     path: "/create-account",
-  element:<CreateAccount/>  
-  }
+    element: <CreateAccount />,
+  },
 ]);
 
 const GlobalStyles = createGlobalStyle`
@@ -41,13 +43,19 @@ body{
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 
 }
-`
+`;
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+  const init = async () => {
+    setIsLoading(false);
+  };
+  useEffect(() => {
+    init();
+  }, []);
   return (
     <>
       <GlobalStyles />
-      <RouterProvider router={router} />
-      {/* 위에 만든 router를 전달해줌 */}
+      {isLoading ? <LoadingScreen /> : <RouterProvider router={router} />}
     </>
   );
 }
