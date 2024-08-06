@@ -3,6 +3,7 @@ import { useState } from "react";
 import { styled } from "styled-components";
 import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import { FirebaseError } from "firebase/app";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -19,6 +20,7 @@ const Title = styled.h1`
 
 const Form = styled.form`
   margin-top: 50px;
+  margin-bottom: 10px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -64,6 +66,7 @@ export default function CreateAccount() {
     }
   };
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    setError("");
     e.preventDefault();
     if (isLoading || name === "" || email === "" || password === "") return;
     try {
@@ -82,7 +85,10 @@ export default function CreateAccount() {
       navigate("/");
       //3. 홈페이지로 리디렉션
     } catch (e) {
-      //에러발생시
+      if (e instanceof FirebaseError) {
+      setError(e.message);  
+      }
+      
     } finally {
       setIsLoading(false);
     }
