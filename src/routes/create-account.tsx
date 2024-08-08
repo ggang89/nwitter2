@@ -56,6 +56,8 @@ export default function CreateAccount() {
       //3. 홈페이지로 리디렉션
     } catch (e) {
       if (e instanceof FirebaseError) {
+      //e가 FirebaseError에 속하나?
+      //instanceof 연산자 : 객체가 특정 클래스에 속하는지 확인
       setError(e.message);  
       }
       
