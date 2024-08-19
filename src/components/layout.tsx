@@ -1,5 +1,6 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { auth } from "../firebase";
 
 const Wrapper = styled.div`
   display: grid;
@@ -40,6 +41,14 @@ const MenuItem = styled.div`
 `;
 
 export default function Layout() {
+  const navigate = useNavigate();
+  const onLogOut = async () => {
+    const ok = confirm("로그아웃 하시겠습니까?");
+    if (ok) {
+      await auth.signOut();
+      navigate("/login");
+    }
+  };
   return (
     <Wrapper>
       <Menu>
@@ -74,7 +83,7 @@ export default function Layout() {
           </MenuItem>
         </Link>
 
-        <MenuItem className="log-out">
+        <MenuItem onClick={onLogOut} className="log-out">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
