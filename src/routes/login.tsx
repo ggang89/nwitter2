@@ -11,6 +11,7 @@ import {
   Title,
   Wrapper,
 } from "../components/auth-components";
+import GithubButton from "../components/github-btn";
 
 
 export default function Login() {
@@ -72,6 +73,7 @@ export default function Login() {
       <Switcher>
         Don't have an account? <Link to="/create-account">Create one</Link>
       </Switcher>
+      <GithubButton/>
     </Wrapper>
   );
 }
