@@ -1,7 +1,8 @@
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, updateDoc } from "firebase/firestore";
 import { useState } from "react";
 import { styled } from "styled-components";
-import { auth, db } from "../firebase";
+import { auth, db, storage } from "../firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 const Form = styled.form`
   display: flex;
@@ -69,8 +70,10 @@ export default function PostTweetForm() {
     //type=file인 input(AttachfileInput)이 변경될 때마다 파일의 배열을 받음
     const { files } = e.target; //input에서 file 추출
     console.log("e.target", e.target);
-    if (files && files.length === 1) { //file이 있고, file이 1개일 때
-      setFile(files[0]); //파일 리스트의 첫번재 파일을 file state에 저장
+    if (files && files.length === 1) {//file이 있고, file이 1개일 때
+      if (files[0].size < 1024 * 1024) { //file 크기 최소한도 지정
+        setFile(files[0]); //파일 리스트의 첫번재 파일을 file state에 저장
+      }
     }
   };
   const onSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
@@ -80,13 +83,21 @@ export default function PostTweetForm() {
     //조건에 해당하면 함수 종료
     try {
       setLoading(true);
-      await addDoc(collection(db, "tweets"), {
+      //addDoc: 새로운 document생성 함수
+      const doc = await addDoc(collection(db, "tweets"), {
         tweet,
         createdAt: Date.now(),
         username: user.displayName || "Anonymous",
-        userId:user.uid
-      })
-      //addDoc: 새로운 document생성 함수
+        userId: user.uid,
+      });
+      if (file) {
+        const locationRef = ref(storage, `tweets/${user.uid}-${user.displayName}/${doc.id}`);
+        const result = await uploadBytes(locationRef, file);
+        const url = await getDownloadURL(result.ref);
+        await updateDoc(doc, { photo: url, });
+      }
+      setTweet("");
+      setFile(null);
     } catch (e) {
       console.log("error",e)
     } finally {
@@ -97,6 +108,7 @@ export default function PostTweetForm() {
   return (
     <Form onSubmit={onSubmit}>
       <TextArea
+        required
         rows={5}
         maxLength={180}
         onChange={onChange}
