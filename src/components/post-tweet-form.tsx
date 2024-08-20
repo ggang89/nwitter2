@@ -1,5 +1,7 @@
+import { addDoc, collection } from "firebase/firestore";
 import { useState } from "react";
 import { styled } from "styled-components";
+import { auth, db } from "../firebase";
 
 const Form = styled.form`
   display: flex;
@@ -57,7 +59,7 @@ const SubmitBtn = styled.input`
 `;
 
 export default function PostTweetForm() {
-  const [isLoading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [tweet, setTweet] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -71,8 +73,29 @@ export default function PostTweetForm() {
       setFile(files[0]); //파일 리스트의 첫번재 파일을 file state에 저장
     }
   };
+  const onSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const user = auth.currentUser;
+    if (!user || loading || tweet === "" || tweet.length > 180) return; 
+    //조건에 해당하면 함수 종료
+    try {
+      setLoading(true);
+      await addDoc(collection(db, "tweets"), {
+        tweet,
+        createdAt: Date.now(),
+        username: user.displayName || "Anonymous",
+        userId:user.uid
+      })
+      //addDoc: 새로운 document생성 함수
+    } catch (e) {
+      console.log("error",e)
+    } finally {
+      setLoading(false)
+    }
+
+  }
   return (
-    <Form>
+    <Form onSubmit={onSubmit}>
       <TextArea
         rows={5}
         maxLength={180}
@@ -94,7 +117,7 @@ export default function PostTweetForm() {
       {/*accept : 이미지만 받는데, 확장자는 모두 가능 */}
       <SubmitBtn
         type="submit"
-        value={isLoading ? "Posting..." : "Post Tweet"}
+        value={loading ? "Posting..." : "Post Tweet"}
       />
     </Form>
   );
