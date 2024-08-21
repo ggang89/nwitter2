@@ -26,7 +26,7 @@ const Photo = styled.img`
 `;
 
 const Username = styled.span`
-  font-weight: 600;
+  font-weight: 700;
   font-size: 15px;
 `;
 
@@ -44,6 +44,7 @@ const DeleteButton = styled.button`
   text-transform: uppercase;
   border-radius: 5px;
   cursor: pointer;
+  margin-right: 10px;
 `;
 const EditButton = styled.button`
   background-color: white;
@@ -56,10 +57,26 @@ const EditButton = styled.button`
   border-radius: 5px;
   cursor: pointer;
 `;
-const SaveBtn = styled(DeleteButton)``;
+const SaveBtn = styled(DeleteButton)`
+  width: 60px;
+  background-color: black;
+  border: 1px solid white;
+  margin: 8px 5px;
+  height: 30px;
+  
+  &:hover {
+    background-color: white;
+    color: #1d9bf0;
+  }
+`;
 const EditText = styled.input`
   margin: 10px 0px;
-  font-size: 18px;
+  font-size: 16px;
+  width:500px;
+  color: white;
+  background-color: black;
+  align-items: center;
+  display: flex;
 `;
 
 export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
@@ -107,7 +124,6 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
     <>
       {isEdit ? (
         <Wrapper>
-          <Username>{username}</Username>
           <EditText onChange={onChange} value={tweeText}></EditText>
           <SaveBtn onClick={onSaveBtn}> Save </SaveBtn>
         </Wrapper>
@@ -121,12 +137,11 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
             ) : null}
             {user?.uid === userId ? (
               <EditButton onClick={onEdit}>Edit</EditButton>
-            ) : null}
-            <Column>{photo ? <Photo src={photo} /> : null}</Column>
+            ) : null}{" "}
           </Column>
+          <Column>{photo ? <Photo src={photo} /> : null}</Column>
         </Wrapper>
       )}
-      ;
     </>
   );
 }
