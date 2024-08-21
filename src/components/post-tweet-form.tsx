@@ -71,9 +71,9 @@ export default function PostTweetForm() {
     const { files } = e.target; //input에서 file 추출
     console.log("e.target", e.target);
     if (files && files.length === 1) {//file이 있고, file이 1개일 때
-      if (files[0].size < 1024 * 1024) { //file 크기 최소한도 지정
+      
         setFile(files[0]); //파일 리스트의 첫번재 파일을 file state에 저장
-      }
+      
     }
   };
   const onSubmit = async (e:React.FormEvent<HTMLFormElement>) => {

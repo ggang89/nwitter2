@@ -17,18 +17,17 @@ const Wrapper=styled.div`
   display: flex;
   gap:10px;
   flex-direction: column;
-  overflow-y: scroll;
+  
 `
 export default function Timeline() {
   const [tweets, setTweets] = useState<ITweet[]>([]); 
-  
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
     const fetchTweets = async () => {
       //쿼리 생성
       const tweetsQuery = query(
         collection(db, "tweets"),
-        orderBy("creadtedAt", "desc"),
+        orderBy("createdAt", "desc"),
         limit(25)
       );
       // const snapshot = await getDocs(tweetsQuery);
@@ -65,7 +64,8 @@ export default function Timeline() {
   return (
     <Wrapper>
       {tweets.map((tweet) => (
-        <Tweet key={tweet.id}{...tweet}/>
+        <Tweet key={tweet.id}{...tweet} />
+        
      ))}
     </Wrapper>
   )

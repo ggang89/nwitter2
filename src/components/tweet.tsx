@@ -14,9 +14,10 @@ const Wrapper = styled.div`
 `;
 
 const Column = styled.div`
-&:last-child{
-  place-self: end;
-}`;
+  &:last-child {
+    place-self: end;
+  }
+`;
 
 const Photo = styled.img`
   width: 100px;
@@ -34,15 +35,15 @@ const Payload = styled.p`
   font-size: 18px;
 `;
 const DeleteButton = styled.button`
-background-color: tomato;
-color:white;
-font-weight: 600;
-border:0;
-font-size: 12px;
-padding: 5px 10px;
-text-transform: uppercase;
-border-radius: 5px;
-cursor: pointer;
+  background-color: tomato;
+  color: white;
+  font-weight: 600;
+  border: 0;
+  font-size: 12px;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  border-radius: 5px;
+  cursor: pointer;
 `;
 const EditButton = styled.button`
   background-color: white;
@@ -55,25 +56,24 @@ const EditButton = styled.button`
   border-radius: 5px;
   cursor: pointer;
 `;
-const SaveBtn=styled(DeleteButton)`
-
-`
+const SaveBtn = styled(DeleteButton)``;
 const EditText = styled.input`
   margin: 10px 0px;
   font-size: 18px;
 `;
 
-export default function Tweet({ username, photo, tweet, userId,id }: ITweet) {
+export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
   const user = auth.currentUser;
   const [isEdit, setIsEdit] = useState(false);
-  const [tweeText, setTweeText] =useState(tweet)
+  const [tweeText, setTweeText] = useState(tweet);
   const onDelete = async () => {
     const ok = confirm("정말로 삭제하시겠습니까?");
     if (!ok || user?.uid !== userId) return; //userId가 같지 않으면 함수 종료
     //user?.으로 써야하는 이유 user.만 쓰면 오류뜸
     try {
       await deleteDoc(doc(db, "tweets", id)); //트윗 내용 삭제
-      if (photo) { //사진이 있다면 사진도 삭제한다
+      if (photo) {
+        //사진이 있다면 사진도 삭제한다
         const photoRef = ref(storage, `tweets/${user.uid}/${id}`);
         await deleteObject(photoRef);
       }
@@ -82,25 +82,25 @@ export default function Tweet({ username, photo, tweet, userId,id }: ITweet) {
     } finally {
       //
     }
-  }
+  };
   const onEdit = () => {
     setIsEdit(true);
-  }
-  const onChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+  };
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTweeText(e.target.value);
-  }
+  };
   const onSaveBtn = async () => {
     if (user?.uid !== userId && tweeText.length > 180) return;
     try {
       const modifyText = await doc(db, "tweets", id);
-      const ok = confirm("수정하시겠습니까?")
+      const ok = confirm("수정하시겠습니까?");
       if (ok) {
-        await updateDoc(modifyText, { tweet: tweeText })
+        await updateDoc(modifyText, { tweet: tweeText });
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
-      setIsEdit(false)
+      setIsEdit(false);
     }
   };
   return (
@@ -109,7 +109,7 @@ export default function Tweet({ username, photo, tweet, userId,id }: ITweet) {
         <Wrapper>
           <Username>{username}</Username>
           <EditText onChange={onChange} value={tweeText}></EditText>
-          <SaveBtn onClick={ onSaveBtn}> Save </SaveBtn>
+          <SaveBtn onClick={onSaveBtn}> Save </SaveBtn>
         </Wrapper>
       ) : (
         <Wrapper>
