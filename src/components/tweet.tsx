@@ -1,8 +1,9 @@
-import { deleteDoc, doc } from "firebase/firestore";
+import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { auth, db, storage } from "../firebase";
 import { ITweet } from "./timeline";
 import { styled } from "styled-components";
 import { deleteObject, ref } from "firebase/storage";
+import { useState } from "react";
 
 const Wrapper = styled.div`
   display: grid;
@@ -42,10 +43,30 @@ padding: 5px 10px;
 text-transform: uppercase;
 border-radius: 5px;
 cursor: pointer;
+`;
+const EditButton = styled.button`
+  background-color: white;
+  color: tomato;
+  font-weight: 600;
+  border: 0;
+  font-size: 12px;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  border-radius: 5px;
+  cursor: pointer;
+`;
+const SaveBtn=styled(DeleteButton)`
+
 `
+const EditText = styled.input`
+  margin: 10px 0px;
+  font-size: 18px;
+`;
 
 export default function Tweet({ username, photo, tweet, userId,id }: ITweet) {
   const user = auth.currentUser;
+  const [isEdit, setIsEdit] = useState(false);
+  const [tweeText, setTweeText] =useState(tweet)
   const onDelete = async () => {
     const ok = confirm("정말로 삭제하시겠습니까?");
     if (!ok || user?.uid !== userId) return; //userId가 같지 않으면 함수 종료
@@ -62,14 +83,50 @@ export default function Tweet({ username, photo, tweet, userId,id }: ITweet) {
       //
     }
   }
+  const onEdit = () => {
+    setIsEdit(true);
+  }
+  const onChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+    setTweeText(e.target.value);
+  }
+  const onSaveBtn = async () => {
+    if (user?.uid !== userId && tweeText.length > 180) return;
+    try {
+      const modifyText = await doc(db, "tweets", id);
+      const ok = confirm("수정하시겠습니까?")
+      if (ok) {
+        await updateDoc(modifyText, { tweet: tweeText })
+      }
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsEdit(false)
+    }
+  };
   return (
-    <Wrapper>
-      <Column>
-        <Username>{username}</Username>
-        <Payload>{tweet}</Payload>
-        {user?.uid === userId ? <DeleteButton onClick={onDelete}>Delete</DeleteButton> : null}
-        <Column>{photo ? <Photo src={photo} /> : null}</Column>
-      </Column>
-    </Wrapper>
+    <>
+      {isEdit ? (
+        <Wrapper>
+          <Username>{username}</Username>
+          <EditText onChange={onChange} value={tweeText}></EditText>
+          <SaveBtn onClick={ onSaveBtn}> Save </SaveBtn>
+        </Wrapper>
+      ) : (
+        <Wrapper>
+          <Column>
+            <Username>{username}</Username>
+            <Payload>{tweet}</Payload>
+            {user?.uid === userId ? (
+              <DeleteButton onClick={onDelete}>Delete</DeleteButton>
+            ) : null}
+            {user?.uid === userId ? (
+              <EditButton onClick={onEdit}>Edit</EditButton>
+            ) : null}
+            <Column>{photo ? <Photo src={photo} /> : null}</Column>
+          </Column>
+        </Wrapper>
+      )}
+      ;
+    </>
   );
 }
